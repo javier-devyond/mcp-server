@@ -31,7 +31,7 @@ const authMiddleware: RequestHandler = (req, res, next) => {
   next();
 };
 
-app.use(authMiddleware);
+
 
 
 // Recurso MCP: /resources/users
@@ -57,6 +57,8 @@ app.get('/mcp.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(manifest);
 });
+
+app.use(authMiddleware);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
