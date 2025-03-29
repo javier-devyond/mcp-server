@@ -1,0 +1,72 @@
+{
+    "name": "MCP Supabase",
+    "description": "Servidor MCP para consultar usuarios desde una base de datos PostgreSQL en Supabase.",
+    "version": "0.1",
+    "resources": [
+      {
+        "name": "Usuarios",
+        "description": "Información detallada de usuarios, incluyendo datos personales, inversión y registro.",
+        "url": "https://mcp-supabase.onrender.com/resources/users",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "users_id": { "type": "string", "description": "Identificador único del usuario" },
+            "created_at": { "type": "string", "format": "date-time" },
+            "updated_at": { "type": "string" },
+            "name": { "type": "string" },
+            "surname": { "type": "string" },
+            "email": { "type": "string" },
+            "dni_nie_passport": { "type": "string" },
+            "birth_date": { "type": "string" },
+            "gender": { "type": "string" },
+            "phone": { "type": "string" },
+            "city": { "type": "string" },
+            "country": { "type": "string" },
+            "nationality": { "type": "string" },
+            "education_level": { "type": "string" },
+            "profession": { "type": "string" },
+            "annual_income": { "type": "string" },
+            "source_of_funds": { "type": "string" },
+            "kyc_status": { "type": "string" },
+            "investor_type": {
+              "type": "string",
+              "description": "Puede ser 'tradicional' si invierte por transferencia o 'blockchain' si usa cripto"
+            },
+            "registration_method": {
+              "type": "string",
+              "description": "Método de registro: Google, email/contraseña o ambos"
+            },
+            "invested_projects": {
+              "type": "array",
+              "description": "Lista de proyectos en los que ha invertido el usuario",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "project_name": { "type": "string" },
+                  "project_id": { "type": "string" },
+                  "project_status": { "type": "string" },
+                  "amount_invested": { "type": ["number", "null"] }
+                }
+              }
+            },
+            "user_type": { "type": "string", "description": "persona o empresa" },
+            "politically_exposed_person": { "type": "string" },
+            "lead_source": { "type": "string" },
+            "company_name": { "type": "string" },
+            "amount_investments": { "type": "string", "description": "Número de proyectos en los que ha invertido" },
+            "total_invested": { "type": "string", "description": "Importe total invertido" },
+            "average_ticket": { "type": "string", "description": "Promedio de inversión por proyecto" },
+            "postal_code": { "type": "string" },
+            "bank_account": { "type": "string" },
+            "registration_date": { "type": "string" }
+          }
+        }
+      }
+    ],
+    "auth": {
+      "type": "bearer",
+      "header": "Authorization",
+      "token": "thry6u56jtybw45hsh"
+    }
+  }
+  
