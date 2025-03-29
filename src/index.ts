@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import fs from 'fs';
+import type { RequestHandler } from 'express';
 
 dotenv.config();
 
@@ -18,23 +20,26 @@ const supabase = axios.create({
   }
 });
 
-// Autenticación tipo Bearer (requisito del protocolo MCP)
-import type { Request, Response, NextFunction } from 'express';
-import type { RequestHandler } from 'express';
+// ✅ Ruta pública ANTES del authMiddleware
+app.get('/mcp.json', (req, res) => {
+  const manifest = fs.readFileSync('mcp.json', 'utf-8');
+  res.setHeader('Content-Type', 'application/json');
+  res.send(manifest);
+});
 
+// ✅ Auth solo a partir de aquí
 const authMiddleware: RequestHandler = (req, res, next) => {
   const auth = req.headers.authorization || '';
   if (!auth.startsWith('Bearer ') || auth.split(' ')[1] !== AUTH_TOKEN) {
     res.status(401).json({ error: 'No autorizado' });
-    return; // <- detenemos la ejecución sin devolver nada
+    return;
   }
   next();
 };
 
+app.use(authMiddleware);
 
-
-
-// Recurso MCP: /resources/users
+// ✅ Ruta protegida
 app.get('/resources/users', async (req, res) => {
   try {
     const params: any = { select: '*' };
@@ -44,21 +49,11 @@ app.get('/resources/users', async (req, res) => {
     });
 
     const { data } = await supabase.get('/users', { params });
-    res.json({ resources: data }); // <- formato MCP oficial
+    res.json({ resources: data });
   } catch (error: any) {
     res.status(500).json({ error: 'Error al obtener usuarios', details: error.message });
   }
 });
-
-// Servir el mcp.json (manifest) desde /mcp.json
-import fs from 'fs';
-app.get('/mcp.json', (req, res) => {
-  const manifest = fs.readFileSync('mcp.json', 'utf-8');
-  res.setHeader('Content-Type', 'application/json');
-  res.send(manifest);
-});
-
-app.use(authMiddleware);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
