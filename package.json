@@ -14,7 +14,9 @@
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
   }
 }
