@@ -42,7 +42,8 @@ const authMiddleware: RequestHandler = (req, res, next) => {
   const token = auth.split(' ')[1];
 
   if (!auth.startsWith('Bearer ') || token !== AUTH_TOKEN) {
-    return res.status(401).json({ error: 'No autorizado' });
+    res.status(401).json({ error: 'No autorizado' });
+    return;
   }
 
   next();
