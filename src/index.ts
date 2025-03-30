@@ -20,14 +20,14 @@ const supabase = axios.create({
   }
 });
 
-// ✅ Ruta pública ANTES del authMiddleware
+// ✅ Ruta pública
 app.get('/mcp.json', (req, res) => {
   const manifest = fs.readFileSync('mcp.json', 'utf-8');
   res.setHeader('Content-Type', 'application/json');
   res.send(manifest);
 });
 
-// ✅ Auth solo a partir de aquí
+// ✅ Middleware solo aplicado donde se necesita
 const authMiddleware: RequestHandler = (req, res, next) => {
   const auth = req.headers.authorization || '';
   if (!auth.startsWith('Bearer ') || auth.split(' ')[1] !== AUTH_TOKEN) {
@@ -37,10 +37,8 @@ const authMiddleware: RequestHandler = (req, res, next) => {
   next();
 };
 
-app.use(authMiddleware);
-
 // ✅ Ruta protegida
-app.get('/resources/users', async (req, res) => {
+app.get('/resources/users', authMiddleware, async (req, res) => {
   try {
     const params: any = { select: '*' };
 
