@@ -33,13 +33,20 @@ app.get('/mcp.json', (req, res) => {
 
 // 🔒 Middleware solo para rutas protegidas
 const authMiddleware: RequestHandler = (req, res, next) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.split(' ')[1];
-  if (!auth.startsWith('Bearer ') || token !== AUTH_TOKEN) {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-  next();
-};
+    if (req.path === '/mcp.json') {
+      return next(); // ⬅️ ¡NO aplicar auth a /mcp.json nunca!
+    }
+  
+    const auth = req.headers.authorization || '';
+    const token = auth.split(' ')[1];
+  
+    if (!auth.startsWith('Bearer ') || token !== AUTH_TOKEN) {
+      return res.status(401).json({ error: 'No autorizado' });
+    }
+  
+    next();
+  };
+  
 
 // 🔐 Ruta protegida: /resources/users
 app.get('/resources/users', authMiddleware, async (req, res) => {
