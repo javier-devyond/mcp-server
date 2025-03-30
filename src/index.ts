@@ -20,7 +20,12 @@ const supabase = axios.create({
   }
 });
 
-// 🟢 Ruta PÚBLICA sin auth
+// ✅ Ruta pública para comprobar el deploy (sin auth)
+app.get('/test', (req, res) => {
+  res.status(200).json({ success: true, message: 'Ruta pública funcionando' });
+});
+
+// ✅ Ruta pública para MCP manifest (sin auth)
 app.get('/mcp.json', (req, res) => {
   try {
     const manifest = fs.readFileSync('mcp.json', 'utf-8');
@@ -33,22 +38,21 @@ app.get('/mcp.json', (req, res) => {
 
 // 🔒 Middleware solo para rutas protegidas
 const authMiddleware: RequestHandler = (req, res, next) => {
-    if (req.path === '/mcp.json') {
-      return next(); // ⬅️ ¡NO aplicar auth a /mcp.json nunca!
-    }
-  
-    const auth = req.headers.authorization || '';
-    const token = auth.split(' ')[1];
-  
-    if (!auth.startsWith('Bearer ') || token !== AUTH_TOKEN) {
-      return res.status(401).json({ error: 'No autorizado' });
-    }
-  
-    next();
-  };
-  
+  if (req.path === '/mcp.json' || req.path === '/test') {
+    return next(); // ⬅️ NO aplicar auth a estas rutas
+  }
 
-// 🔐 Ruta protegida: /resources/users
+  const auth = req.headers.authorization || '';
+  const token = auth.split(' ')[1];
+
+  if (!auth.startsWith('Bearer ') || token !== AUTH_TOKEN) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+
+  next();
+};
+
+// ✅ Ruta protegida
 app.get('/resources/users', authMiddleware, async (req, res) => {
   try {
     const params: any = { select: '*' };
