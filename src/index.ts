@@ -27,20 +27,15 @@ app.get('/test', (req, res) => {
 
 // ✅ Ruta pública para Claude
 app.get('/mcp.json', (req, res) => {
-  try {
-    // Verifica si el archivo existe antes de leerlo
-    if (!fs.existsSync('mcp.json')) {
-      console.log('Error: archivo mcp.json no encontrado');
-      return res.status(404).json({ error: 'Archivo no encontrado' });
-    }
-    
-    const manifest = fs.readFileSync('mcp.json', 'utf-8');
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).send(manifest);
-  } catch (err) {
-    console.error('Error al leer mcp.json:', err);
-    res.status(500).json({ error: 'Error al leer mcp.json' });
-  }
+  // Contenido hardcodeado como respaldo
+  const manifestContent = {
+    "name": "MCP API",
+    "version": "1.0.0",
+    // Añade aquí el contenido que debería tener tu mcp.json
+  };
+  
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).json(manifestContent);
 });
 
 // 🔐 Middleware solo para rutas protegidas
