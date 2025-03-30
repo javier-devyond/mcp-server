@@ -34,7 +34,7 @@ app.get('/mcp.json', (req, res) => {
     } catch (err) {
       res.status(500).json({ error: 'Error al leer mcp.json' });
     }
-  });
+  }); 
   
   res.setHeader('Content-Type', 'application/json');
   res.status(200).json(manifestContent);
