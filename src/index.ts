@@ -27,19 +27,15 @@ app.get('/test', (req, res) => {
 
 // ✅ Ruta pública para Claude
 app.get('/mcp.json', (req, res) => {
-    try {
-      const manifest = fs.readFileSync('mcp.json', 'utf-8');
-      res.setHeader('Content-Type', 'application/json');
-      res.status(200).send(manifest);
-    } catch (err) {
-      res.status(500).json({ error: 'Error al leer mcp.json' });
-    }
-  }); 
-  
-  
-  res.setHeader('Content-Type', 'application/json');
-  res.status(200).json(manifestContent);
+  try {
+    const manifest = fs.readFileSync('mcp.json', 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(manifest);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al leer mcp.json' });
+  }
 });
+
 
 // 🔐 Middleware solo para rutas protegidas
 const authMiddleware: RequestHandler = (req, res, next) => {

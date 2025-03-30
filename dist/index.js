@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const axios_1 = __importDefault(require("axios"));
+const fs_1 = __importDefault(require("fs"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -24,14 +25,14 @@ app.get('/test', (req, res) => {
 });
 // ✅ Ruta pública para Claude
 app.get('/mcp.json', (req, res) => {
-    // Contenido hardcodeado como respaldo
-    const manifestContent = {
-        "name": "MCP API",
-        "version": "1.0.0",
-        // Añade aquí el contenido que debería tener tu mcp.json
-    };
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(manifestContent);
+    try {
+        const manifest = fs_1.default.readFileSync('mcp.json', 'utf-8');
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).send(manifest);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Error al leer mcp.json' });
+    }
 });
 // 🔐 Middleware solo para rutas protegidas
 const authMiddleware = (req, res, next) => {
