@@ -18,35 +18,44 @@ const supabase = axios_1.default.create({
         Authorization: `Bearer ${process.env.SUPABASE_API_KEY}`,
     }
 });
+// ✅ Ruta pública para test
+app.get('/test', (req, res) => {
+    res.status(200).json({ success: true });
+});
+// ✅ Ruta pública para Claude
+app.get('/mcp.json', (req, res) => {
+    // Contenido hardcodeado como respaldo
+    const manifestContent = {
+        "name": "MCP API",
+        "version": "1.0.0",
+        // Añade aquí el contenido que debería tener tu mcp.json
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(manifestContent);
+});
+// 🔐 Middleware solo para rutas protegidas
 const authMiddleware = (req, res, next) => {
     const auth = req.headers.authorization || '';
-    if (!auth.startsWith('Bearer ') || auth.split(' ')[1] !== AUTH_TOKEN) {
+    const token = auth.split(' ')[1];
+    if (!auth.startsWith('Bearer ') || token !== AUTH_TOKEN) {
         res.status(401).json({ error: 'No autorizado' });
-        return; // <- detenemos la ejecución sin devolver nada
+        return;
     }
     next();
 };
-app.use(authMiddleware);
-// Recurso MCP: /resources/users
-app.get('/resources/users', async (req, res) => {
+// 🔐 Ruta protegida
+app.get('/resources/users', authMiddleware, async (req, res) => {
     try {
         const params = { select: '*' };
         Object.entries(req.query).forEach(([key, value]) => {
             params[key] = `eq.${value}`;
         });
         const { data } = await supabase.get('/users', { params });
-        res.json({ resources: data }); // <- formato MCP oficial
+        res.status(200).json({ resources: data });
     }
     catch (error) {
         res.status(500).json({ error: 'Error al obtener usuarios', details: error.message });
     }
-});
-// Servir el mcp.json (manifest) desde /mcp.json
-const fs_1 = __importDefault(require("fs"));
-app.get('/mcp.json', (req, res) => {
-    const manifest = fs_1.default.readFileSync('mcp.json', 'utf-8');
-    res.setHeader('Content-Type', 'application/json');
-    res.send(manifest);
 });
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
