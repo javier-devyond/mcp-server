@@ -20,12 +20,12 @@ const supabase = axios.create({
   }
 });
 
-// ✅ Ruta pública para comprobar el deploy (sin auth)
+// ✅ Ruta pública para test
 app.get('/test', (req, res) => {
-  res.status(200).json({ success: true, message: 'Ruta pública funcionando' });
+  res.status(200).json({ success: true });
 });
 
-// ✅ Ruta pública para MCP manifest (sin auth)
+// ✅ Ruta pública para Claude
 app.get('/mcp.json', (req, res) => {
   try {
     const manifest = fs.readFileSync('mcp.json', 'utf-8');
@@ -36,12 +36,8 @@ app.get('/mcp.json', (req, res) => {
   }
 });
 
-// 🔒 Middleware solo para rutas protegidas
+// 🔐 Middleware solo para rutas protegidas
 const authMiddleware: RequestHandler = (req, res, next) => {
-  if (req.path === '/mcp.json' || req.path === '/test') {
-    return next(); // ⬅️ NO aplicar auth a estas rutas
-  }
-
   const auth = req.headers.authorization || '';
   const token = auth.split(' ')[1];
 
@@ -52,7 +48,7 @@ const authMiddleware: RequestHandler = (req, res, next) => {
   next();
 };
 
-// ✅ Ruta protegida
+// 🔐 Ruta protegida
 app.get('/resources/users', authMiddleware, async (req, res) => {
   try {
     const params: any = { select: '*' };
